@@ -126,6 +126,19 @@ function startRecursive() {
 
   // Then finally spit out total collect sum .
   // Your response should be "Total: 4950"
+
+  let temporal, chunk = 10, chunksPromises = [];
+  while (users.length) {
+    temporal = users.splice(0, chunk);
+
+    let chunkPromises = temporal.map(user => processUser(user.id));
+
+    chunksPromises.push(Promise.all(chunkPromises).then(chunkTotals => {
+      return chunkTotals.reduce((sum, x) => sum + x);
+    }));
+  }
+
+  return Promise.all(chunksPromises).then(chunkTotals => chunkTotals.reduce((sum, x) => sum + x))
 }
 
 startRecursive()
